@@ -2,9 +2,11 @@
 
 namespace RelationMatrix
 {
-    public class Relation: IRelation
+    public class Relation: IRelation, IInteractiveGrid
     {
         private const int SizeUpperLimit = 20;
+
+        public event EventHandler<GridChangeEventArgs> ObjectChanged;
 
         public bool[,] Matrix { get; protected set; }
         public int Size { get; protected set; }
@@ -14,9 +16,8 @@ namespace RelationMatrix
             get
             {
                 for(int i=0; i<this.Size; i++)
-                {
                     if(!this.Matrix[i, i]) return false;
-                }
+                
                 return true;
             }
         }
@@ -26,9 +27,8 @@ namespace RelationMatrix
             get
             {
                 for(int i=0; i<this.Size; i++)
-                {
                     if(this.Matrix[i, i]) return false;
-                }
+
                 return true;
             }
         }
@@ -38,12 +38,9 @@ namespace RelationMatrix
             get
             {
                 for(int i=0; i<this.Size-1; i++)
-                {
                     for(int j=i+1; j<this.Size; j++)
-                    {
                         if(this.Matrix[i, j] != this.Matrix[j, i]) return false;
-                    }
-                }
+                    
                 return true;
             }
         }
@@ -53,33 +50,26 @@ namespace RelationMatrix
             get
             {
                 for(int i=0; i<this.Size-1; i++)
-                {
                     for(int j=i+1; j<this.Size; j++)
-                    {
                         if(this.Matrix[i, j] && this.Matrix[j, i]) return false;
-                    }
-                }
+                    
                 return true;
             }
         }
 
-        public bool IsAssymetric
+        public bool IsAsymmetric
         {
 
             get
             {
                 for(int i=0; i<this.Size; i++)
-                {
                     if(this.Matrix[i, i]) return false;
-                }
+                
 
                 for(int i=0; i<this.Size-1; i++)
-                {
                     for(int j=i+1; j<this.Size; j++)
-                    {
                         if(this.Matrix[i, j] == this.Matrix[j, i]) return false;
-                    }
-                }
+                    
                 return true;
             }
         }
@@ -89,18 +79,11 @@ namespace RelationMatrix
             get
             {
                 for(int i=0; i<this.Size-1; i++)
-                {
                     for(int j=0; j<this.Size; j++) 
-                    { 
                         if(this.Matrix[i, j])
-                        {
                             for(int k=0; k<this.Size; k++)
-                            {
                                 if(this.Matrix[i, k] && !this.Matrix[k, j]) return false;
-                            }
-                        }
-                    }
-                }
+                            
                 return true;
             }
         }
@@ -110,12 +93,9 @@ namespace RelationMatrix
             get
             {
                 for(int i=0; i<this.Size-1; i++)
-                {
                     for(int j=i+1; j<this.Size; j++)
-                    {
                         if(!(this.Matrix[i, j] || this.Matrix[j, i])) return false;
-                    }
-                }
+                    
                 return true;
             }
         }
@@ -128,9 +108,18 @@ namespace RelationMatrix
         /// Resize in-place and optionally keep old matrix values.
         /// </summary>
         /// <param name="newSize">New size of matrix.</param>
-        /// <param name="keepMatrixValues">Indicates whether old matrix should be kept.</param>
-        public virtual void Resize(int newSize, bool keepMatrixValues=false)
+        /// <param name="keepValues">Indicates whether old matrix should be kept.</param>
+        public virtual void Resize(int newSize, bool keepValues=false)
         {
+            // Parameter value check
+            if (newSize < 0 || newSize > SizeUpperLimit)
+            {
+                throw new ArgumentOutOfRangeException (
+                    paramName: "newSize", 
+                    message: $"Parameter newSize = {newSize} is out of [0...{SizeUpperLimit}] range."
+                );
+            }
+
             if (newSize != this.Size)
             {
                 // Back up old values
@@ -142,7 +131,7 @@ namespace RelationMatrix
                 this.Matrix = new bool[newSize, newSize];
 
                 // Restore matrix values
-                if (keepMatrixValues)
+                if (keepValues)
                 {
                     for(int i=0; i<keepSize; i++)
                     {
@@ -155,8 +144,21 @@ namespace RelationMatrix
             }
         }
 
+        public void ToggleCell(int row, int col)
+        {
+
+        }
+
         public Relation(int size)
         {
+            // Parameter value check
+            if (size < 0 || size > SizeUpperLimit)
+            {
+                throw new ArgumentOutOfRangeException (
+                    paramName: "size", 
+                    message: $"Parameter size = {size} is out of [0...{SizeUpperLimit}] range."
+                );
+            }
             this.Size = size;
             this.Matrix = new bool[size, size];
         }

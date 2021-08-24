@@ -2,7 +2,7 @@
 
 namespace RelationMatrix
 {
-    interface IRelation
+    public interface IRelation
     {
         int Size { get; }
         bool[,] Matrix { get; }
@@ -11,7 +11,7 @@ namespace RelationMatrix
         bool IsAntireflective { get; }
         bool IsSymmetric { get; }
         bool IsAntisymmetric { get; }
-        bool IsAssymetric { get; }
+        bool IsAsymmetric { get; }
         bool IsTransitive { get; }
         bool IsFull { get; }
         bool IsOrdered { get; }
