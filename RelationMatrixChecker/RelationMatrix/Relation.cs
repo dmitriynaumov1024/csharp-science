@@ -112,7 +112,7 @@ namespace RelationMatrix
         public virtual void Resize(int newSize, bool keepValues=false)
         {
             // Parameter value check
-            if (newSize < 0 || newSize > SizeUpperLimit)
+            if (newSize < 1 || newSize > SizeUpperLimit)
             {
                 throw new ArgumentOutOfRangeException (
                     paramName: "newSize", 
@@ -141,12 +141,38 @@ namespace RelationMatrix
                         }
                     }
                 }
+
+                this.ObjectChanged.Invoke (
+                    this,
+                    new GridChangeEventArgs {
+                        WhatChanged = GridChangeEventArgs.Change.Resize
+                    }
+                );
             }
+        }
+
+        public void Clear()
+        {
+            this.Matrix = new bool[Size, Size];
+            this.ObjectChanged.Invoke (
+                this,
+                new GridChangeEventArgs {
+                    WhatChanged = GridChangeEventArgs.Change.Resize
+                }
+            );
         }
 
         public void ToggleCell(int row, int col)
         {
-
+            this.Matrix[row, col] = !this.Matrix[row, col];
+            this.ObjectChanged.Invoke (
+                this, 
+                new GridChangeEventArgs { 
+                    WhatChanged = GridChangeEventArgs.Change.CellToggled, 
+                    Col = col, 
+                    Row = row
+                }
+            );
         }
 
         public Relation(int size)

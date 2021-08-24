@@ -15,6 +15,7 @@ namespace RelationMatrix_Winforms
         public MainForm()
         {
             this.Name = "Relation matrix checker";
+            this.Text = this.Name;
             this.ClientSize = new Size(560, 400);
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
 
