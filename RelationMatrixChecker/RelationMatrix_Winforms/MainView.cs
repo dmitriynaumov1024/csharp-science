@@ -22,7 +22,12 @@ namespace RelationMatrix_Winforms
             orderedLabel,
             equivalentLabel;
 
-        protected SplitContainer mainPanel;
+        const int mainPanelUpperRowSizePercent = 90,
+                  mainPanelBottomRowSizePercent = 10,
+                  mainPanelLeftColumnSizePercent = 60,
+                  mainPanelRightColumnSizePercent = 40;
+
+        protected TableLayoutPanel mainPanel;
         protected FlowLayoutPanel buttonGridPanel;
         protected FlowLayoutPanel infoPanel;
 
@@ -36,7 +41,21 @@ namespace RelationMatrix_Winforms
         protected virtual void InitializeView()
         {
             this.BackColor = Color.FromArgb(0xFA, 0xFA, 0xFA);
-            this.mainPanel = new SplitContainer { Dock = DockStyle.Fill, Orientation = Orientation.Vertical };
+
+            // Setup main layout panel
+            this.mainPanel = new TableLayoutPanel(){ 
+                Dock = DockStyle.Fill, 
+                BackColor = Color.AliceBlue,
+                ColumnCount = 2,
+                RowCount = 2 
+            };
+            this.mainPanel.RowStyles.Clear();
+            this.mainPanel.ColumnStyles.Clear();
+            this.mainPanel.ColumnStyles.Add (new ColumnStyle (SizeType.Percent, mainPanelLeftColumnSizePercent));
+            this.mainPanel.ColumnStyles.Add (new ColumnStyle (SizeType.Percent, mainPanelRightColumnSizePercent));
+            this.mainPanel.RowStyles.Add (new RowStyle (SizeType.Percent, mainPanelUpperRowSizePercent));
+            this.mainPanel.RowStyles.Add (new RowStyle (SizeType.Percent, mainPanelBottomRowSizePercent));
+
             this.InitializeButtons();
             this.InitializeLabels();
             this.Controls.Add(mainPanel);
@@ -64,6 +83,9 @@ namespace RelationMatrix_Winforms
             this.equivalentLabel = MakeCheckBox("Equivalent");
 
             this.infoPanel = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown };
+            // Debug crutch
+            this.infoPanel.BackColor = Color.PaleGreen;
+
             this.infoPanel.Controls.AddRange
             (
                 new Control[] 
@@ -79,7 +101,9 @@ namespace RelationMatrix_Winforms
                     this.equivalentLabel
                 }
             );
-            this.mainPanel.Panel2.Controls.Add(this.infoPanel);
+            this.mainPanel.Controls.Add (this.infoPanel, row: 0, column: 1);
+            this.mainPanel.Controls.Add (new Button { Dock = DockStyle.Fill, Text = "DEBUG CRUTCH 1"}, row: 1, column: 0);
+            this.mainPanel.Controls.Add (new Button { Dock = DockStyle.Fill, Text = "DEBUG CRUTCH 2"}, row: 1, column: 1);
         }
 
         protected virtual void UpdateLabels()

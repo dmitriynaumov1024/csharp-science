@@ -18,10 +18,7 @@ namespace RelationMatrix_Winforms
             this.ClientSize = new Size(560, 400);
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
 
-            this.Controls.Add 
-            (
-                new MainView<Relation>(new Relation(4))
-            );
+            this.Controls.Add (new MainView<Relation>(new Relation(4)) { Dock = DockStyle.Fill });
         }
     }
 }
