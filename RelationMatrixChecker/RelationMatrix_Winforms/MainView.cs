@@ -12,9 +12,9 @@ namespace RelationMatrix_Winforms
         const string aboutString = 
 @"Relation   Matrix   Checker
 Copyright (C) 2021 Dmitriy Naumov.
-Code from previous own projects reused.
-This Application is free and comes 
-with no license or warranty.";
+Code from previous own projects 
+reused. This Application is free and
+comes with no license or warranty.";
 
         protected TViewModel Model;
         protected Button[,] buttonGrid;
@@ -36,7 +36,7 @@ with no license or warranty.";
 
         protected TableLayoutPanel mainPanel;
         protected Panel buttonGridPanel;
-        protected FlowLayoutPanel infoPanel;
+        protected GroupBox infoPanel;
         protected FlowLayoutPanel sizeAdjustmentPanel;
 
         protected Label sizeLabel;
@@ -55,6 +55,7 @@ with no license or warranty.";
         protected virtual void InitializeView()
         {
             //this.BackColor = Color.FromArgb(0xFA, 0xFA, 0xFA);
+            this.Margin = new Padding(top: 20, left: 0, right: 0, bottom: 0);
 
             // Setup main layout panel
             this.mainPanel = new TableLayoutPanel(){ 
@@ -71,6 +72,7 @@ with no license or warranty.";
 
             this.aboutLabel = new Label { Text = "?", Width = 32, Dock = DockStyle.Right, TextAlign = ContentAlignment.MiddleCenter };
             this.toolTip = new ToolTip();
+            this.toolTip.BackColor = Color.White;
             this.toolTip.SetToolTip(aboutLabel, aboutString);
 
             this.InitializeButtons();
@@ -94,6 +96,7 @@ with no license or warranty.";
                     CheckAlign = ContentAlignment.MiddleLeft 
                 }; 
             };
+
             this.reflectiveLabel = MakeCheckBox("Reflective");
             this.antireflectiveLabel = MakeCheckBox("Antireflective");
             this.symmetricLabel = MakeCheckBox("Symmetric");
@@ -104,13 +107,14 @@ with no license or warranty.";
             this.orderedLabel = MakeCheckBox("Ordered");
             this.equivalentLabel = MakeCheckBox("Equivalent");
 
-            this.infoPanel = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown };
+            this.infoPanel = new GroupBox { Dock = DockStyle.Fill, Text = "Relation properties", Padding = new Padding(10) };
 
-            this.infoPanel.Controls.AddRange
-            (
-                new Control[] 
-                { 
-                    new Label { Text = "Relation properties", Width = 160, Font = new Font(FontFamily.GenericSansSerif, 10) },
+            var infoPanelFlowPanel = new FlowLayoutPanel { 
+                Dock = DockStyle.Fill, 
+                FlowDirection = FlowDirection.TopDown
+            };
+            infoPanelFlowPanel.Controls.AddRange (
+                new Control[] { 
                     this.reflectiveLabel, 
                     this.antireflectiveLabel, 
                     this.symmetricLabel,
@@ -122,6 +126,8 @@ with no license or warranty.";
                     this.equivalentLabel
                 }
             );
+            
+            this.infoPanel.Controls.Add(infoPanelFlowPanel);
         }
 
         protected virtual void UpdateLabels()
@@ -145,29 +151,29 @@ with no license or warranty.";
             }
 
             Button[,] oldButtons = this.buttonGrid;
-            int sizeRow = Model.Matrix.GetLength(0), 
-                sizeCol = Model.Matrix.GetLength(1),
-                oldSizeRow = oldButtons is null ? 0 : oldButtons.GetLength(0),
-                oldSizeCol = oldButtons is null ? 0 : oldButtons.GetLength(1),
-                keepSizeRow = Math.Min(sizeRow, oldSizeRow),
-                keepSizeCol = Math.Min(sizeCol, oldSizeCol);
+            int rowCount = Model.Matrix.GetLength(0), 
+                colCount = Model.Matrix.GetLength(1),
+                oldRowCount = oldButtons is null ? 0 : oldButtons.GetLength(0),
+                oldColCount = oldButtons is null ? 0 : oldButtons.GetLength(1),
+                keepRowCount = Math.Min(rowCount, oldRowCount),
+                keepColCount = Math.Min(colCount, oldColCount);
 
             int buttonPanelHeight = this.ClientSize.Height * mainPanelUpperRowSizePercent / 100,
                 buttonPanelWidth = this.ClientSize.Width * mainPanelLeftColumnSizePercent / 100,
-                buttonSize = Math.Min (buttonPanelWidth / (sizeCol + 2), buttonPanelHeight / (sizeRow + 2)),
-                topLeftX = (int)((buttonPanelWidth - (float)(buttonSize * sizeCol)) / 2),
-                topLeftY = (int)((buttonPanelHeight - (float)(buttonSize * sizeRow)) / 2);
+                buttonSize = Math.Min (buttonPanelWidth / (colCount + 2), buttonPanelHeight / (rowCount + 2)),
+                topLeftX = (int)((buttonPanelWidth - (float)(buttonSize * colCount)) / 2),
+                topLeftY = (int)((buttonPanelHeight - (float)(buttonSize * rowCount)) / 2);
 
-            this.buttonGrid = new Button[sizeRow, sizeCol];
+            this.buttonGrid = new Button[rowCount, colCount];
 
             if (this.buttonGridPanel == null) this.buttonGridPanel = new Panel { Dock = DockStyle.Fill };
 
             // Delete everything unused
-            for(int row=0; row<oldSizeRow; row++)
+            for(int row=0; row<oldRowCount; row++)
             {
-                for(int col=0; col<oldSizeCol; col++)
+                for(int col=0; col<oldColCount; col++)
                 {
-                    if(row >= sizeRow || col >= sizeCol) 
+                    if(row >= rowCount || col >= colCount) 
                     { 
                         this.buttonGridPanel.Controls.Remove(oldButtons[row, col]);
                         oldButtons[row, col].Dispose(); 
@@ -176,12 +182,12 @@ with no license or warranty.";
             }
 
             // Make new button array, reusing some buttons
-            for(int row=0; row<sizeRow; row++)
+            for(int row=0; row<rowCount; row++)
             {
-                for(int col=0; col<sizeCol; col++)
+                for(int col=0; col<colCount; col++)
                 {
                     // Means the button will be used further
-                    if (row < keepSizeRow && col < keepSizeCol)
+                    if (row < keepRowCount && col < keepColCount)
                     {
                         this.buttonGrid[row, col] = oldButtons[row, col];
                     } 
@@ -192,10 +198,10 @@ with no license or warranty.";
                         this.buttonGrid[row, col].Click += OnGridButtonClick;
                         this.buttonGridPanel.Controls.Add(buttonGrid[row, col]);
                     }
-
-                    this.buttonGrid[row, col].Text = this.Model.Matrix[row, col] ? "1" : "0";
-                    this.buttonGrid[row, col].Location = new Point(topLeftX + buttonSize * col, topLeftY + buttonSize * row);
-                    this.buttonGrid[row, col].Size = new Size(buttonSize, buttonSize);
+                    var button = this.buttonGrid[row, col];
+                    button.Text = this.Model.Matrix[row, col] ? "1" : "0";
+                    button.Location = new Point(topLeftX + buttonSize * col, topLeftY + buttonSize * row);
+                    button.Size = new Size(buttonSize, buttonSize);
                 }
             }
         }
@@ -207,20 +213,16 @@ with no license or warranty.";
                 FlowDirection = FlowDirection.LeftToRight 
             };
 
+            var MonospaceFont = new Font(FontFamily.GenericMonospace, 9);
+
             var clearButton = new Button { Text = "Clear cells" };
             clearButton.Click += (sender, args) => this.Model.Clear();
-
-            var minusButton = new Button { Text = "-", Width = 25 };
-            minusButton.Click += (sender, args) => { 
-                try { this.Model.Resize((this.Model as IRelation).Size - 1, keepValues: true); } 
-                finally { } 
-            };
             
-            var plusButton = new Button { Text = "+", Width = 25 };
-            plusButton.Click += (sender, args) => { 
-                try { this.Model.Resize((this.Model as IRelation).Size + 1, keepValues: true); } 
-                finally { } 
-            };
+            var minusButton = new Button { Text = "—", Width = 25, Font = MonospaceFont };
+            minusButton.Click += (sender, args) => this.Model.TryDecrementSize(keepValues: true);
+            
+            var plusButton = new Button { Text = "+", Width = 25, Font = MonospaceFont };
+            plusButton.Click += (sender, args) => this.Model.TryIncrementSize(keepValues: true);
 
             this.sizeLabel = new XLabel($"Size: {(this.Model as IRelation).Size}"){ Height = clearButton.Height, Margin = clearButton.Margin };
 

@@ -11,6 +11,9 @@ namespace RelationMatrix
         void Resize(int newSize, bool keepValues);
         void Clear();
 
+        bool TryDecrementSize(bool keepValues);
+        bool TryIncrementSize(bool keepValues);
+
         int Size { get; }
     }
 }

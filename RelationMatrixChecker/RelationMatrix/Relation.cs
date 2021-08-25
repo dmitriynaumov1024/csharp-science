@@ -4,7 +4,7 @@ namespace RelationMatrix
 {
     public class Relation: IRelation, IInteractiveGrid
     {
-        private const int SizeUpperLimit = 20;
+        private const int SizeUpperLimit = 14;
 
         public event EventHandler<GridChangeEventArgs> ObjectChanged;
 
@@ -148,6 +148,28 @@ namespace RelationMatrix
                         WhatChanged = GridChangeEventArgs.Change.Resize
                     }
                 );
+            }
+        }
+
+        public virtual bool TryIncrementSize(bool keepValues)
+        {
+            try { 
+                this.Resize(this.Size + 1, keepValues); 
+                return true; 
+            }
+            catch (ArgumentOutOfRangeException) { 
+                return false; 
+            }
+        }
+
+        public virtual bool TryDecrementSize(bool keepValues)
+        {
+            try { 
+                this.Resize(this.Size - 1, keepValues); 
+                return true; 
+            }
+            catch (ArgumentOutOfRangeException) { 
+                return false; 
             }
         }
 
