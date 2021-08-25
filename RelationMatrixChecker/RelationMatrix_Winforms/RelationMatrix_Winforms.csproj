@@ -4,6 +4,9 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
+    <Authors>Dmitriy Naumov</Authors>
+    <Product>Relation Matrix Checker</Product>
+    <Copyright>2021 Dmitriy Naumov</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
