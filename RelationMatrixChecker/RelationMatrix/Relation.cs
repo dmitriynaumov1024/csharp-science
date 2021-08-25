@@ -78,11 +78,11 @@ namespace RelationMatrix
         {
             get
             {
-                for(int i=0; i<this.Size-1; i++)
+                for(int i=0; i<this.Size; i++)
                     for(int j=0; j<this.Size; j++) 
                         if(this.Matrix[i, j])
                             for(int k=0; k<this.Size; k++)
-                                if(this.Matrix[i, k] && !this.Matrix[k, j]) return false;
+                                if(this.Matrix[j, k] && !this.Matrix[i, k]) return false;
                             
                 return true;
             }
